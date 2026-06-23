@@ -1,0 +1,6 @@
+{
+  "name": "The Facial Space",
+  "description": "Premium esthetician and facial spa in East Meadow, NY offering customized skincare treatments.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+
+  --color-spa-blue: #d7e8f0;
+  --color-spa-blue-light: #f0f7f9;
+  --color-spa-blue-dark: #4a94aa;
+  --color-spa-cta: #4a94aa;
+  --color-spa-champagne: #f8fbfb;
+  --color-spa-off-white: #f7faf9;
+  --color-spa-silver: #f4f5f5;
+  --color-spa-text: #2c3338;
+  --color-spa-text-light: #5f6c76;
+}
+
+body {
+  @apply text-spa-text bg-spa-off-white font-sans antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-serif text-spa-text tracking-wide;
+}
+
+/* Glassmorphism utilities */
+.glass-panel {
+  @apply bg-white/70 backdrop-blur-md border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)];
+}
+
+.glass-nav {
+  @apply bg-white/90 backdrop-blur-lg border-b border-white/20 shadow-sm;
+}
+
+@media (max-width: 767px) {
+  .glass-panel,
+  .glass-nav {
+    backdrop-filter: none;
+  }
+
+  .group:hover img,
+  .group:hover [class*="scale"] {
+    transform: none;
+  }
+}
