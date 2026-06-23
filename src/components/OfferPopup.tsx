@@ -1,96 +1,86 @@
-import { type FormEvent, useState } from 'react';
-import { Mail, X } from 'lucide-react';
-import { LINKS } from '../constants';
+import { useState } from 'react';
+
+type LeadFormConfig = {
+  form_ids: string[];
+  preview: number;
+  asset_domain: string;
+  data_domain: string;
+};
 
 export default function OfferPopup() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const openLeadForm = () => {
+    setMessage('');
+    setIsLoading(true);
 
-    if (!LINKS.firstTreatmentOffer) {
-      setMessage('Add your Square signup link to connect this offer.');
+    const formConfig: LeadFormConfig = {
+      form_ids: ['6874eeab-228b-416d-bb38-a327ca5ee0a2'],
+      preview: 0,
+      asset_domain: 'cdn3.editmysite.com/app/marketing',
+      data_domain: 'www.weebly.com/app/marketing',
+    };
+    const scriptSrc = 'https://cdn3.editmysite.com/app/marketing/js/dist/lead-form.js';
+
+    window.formIds = window.formIds || [];
+    if (window.leadForm && 'form_ids' in window.leadForm) {
+      window.formIds = window.formIds.concat(window.leadForm.form_ids);
+    }
+
+    window.formObject = 'leadForm';
+    window.leadForm = (config: LeadFormConfig) => {
+      const mergedIds = [...window.formIds, ...config.form_ids].filter(
+        (formId, index, allFormIds) => allFormIds.indexOf(formId) === index
+      );
+      window.leadForm = { ...config, form_ids: mergedIds };
+    };
+    window.leadForm(formConfig);
+
+    const existingScript = Array.from(document.scripts).find((script) => script.src.includes('lead-form.js'));
+
+    if (existingScript) {
+      setIsLoading(false);
       return;
     }
 
-    window.location.href = LINKS.firstTreatmentOffer;
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = scriptSrc;
+    script.onload = () => setIsLoading(false);
+    script.onerror = () => {
+      setIsLoading(false);
+      setMessage('Offer form could not load. Please refresh and try again.');
+    };
+    document.head.appendChild(script);
   };
 
-  if (!isOpen) {
-    return (
-      <div className="fixed bottom-0 right-4 z-40 md:right-8">
-        <button
-          type="button"
-          onClick={() => {
-            setMessage('');
-            setIsOpen(true);
-          }}
-          className="border border-spa-cta bg-spa-cta px-7 py-4 text-sm font-bold text-white shadow-[0_-8px_28px_rgba(44,51,56,0.12)] transition-colors hover:border-spa-text hover:bg-spa-text"
-        >
-          Get $10 Off
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <aside className="fixed inset-x-0 bottom-0 z-40 border-t border-spa-blue-dark bg-[#fbfaf7]/95 shadow-[0_-18px_60px_rgba(44,51,56,0.14)] md:backdrop-blur-md">
-      <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-6 py-7 md:grid-cols-[1fr_auto] lg:px-8">
-        <button
-          type="button"
-          onClick={() => setIsOpen(false)}
-          aria-label="Close offer"
-          className="absolute right-4 top-4 text-spa-text-light transition-colors hover:text-spa-text"
+    <div className="fixed bottom-0 right-4 z-40 md:right-8">
+      <button
+        type="button"
+        onClick={openLeadForm}
+        disabled={isLoading}
+        className="border border-spa-cta bg-spa-cta px-7 py-4 text-sm font-bold text-white shadow-[0_-8px_28px_rgba(44,51,56,0.12)] transition-colors hover:border-spa-text hover:bg-spa-text disabled:cursor-wait disabled:opacity-75"
+      >
+        {isLoading ? 'Loading...' : 'Get $10 Off'}
+      </button>
+      {message && (
+        <p
+          role="status"
+          className="mt-2 max-w-[230px] bg-white px-3 py-2 text-xs font-medium text-spa-text shadow-lg"
         >
-          <X size={22} />
-        </button>
-
-        <div className="pr-8 text-center md:text-left">
-          <p className="mb-3 text-3xl font-bold leading-tight text-spa-blue-dark md:text-4xl">
-            Get $10 Off Your First Treatment
-          </p>
-          <p className="mx-auto max-w-3xl text-base leading-relaxed text-spa-text md:mx-0 md:text-lg">
-            Drop your email to receive your first-treatment offer and start your clear skin journey.
-          </p>
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-xl md:w-[390px]"
-        >
-          <label htmlFor="first-treatment-email" className="sr-only">
-            Email address
-          </label>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="relative flex-1">
-              <Mail
-                size={18}
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-spa-text-light"
-              />
-              <input
-                id="first-treatment-email"
-                name="email"
-                type="email"
-                required
-                placeholder="Email"
-                className="h-12 w-full rounded-none border border-spa-blue-dark/45 bg-white pl-11 pr-4 text-sm text-spa-text outline-none transition-colors placeholder:text-spa-text-light focus:border-spa-blue-dark"
-              />
-            </div>
-            <button
-              type="submit"
-              className="h-12 bg-spa-cta px-7 text-xs font-bold uppercase tracking-[0.14em] text-white transition-colors hover:bg-spa-text"
-            >
-              Get $10 Off
-            </button>
-          </div>
-          {message && (
-            <p className="mt-3 text-center text-xs font-medium uppercase tracking-widest text-spa-text-light md:text-left">
-              {message}
-            </p>
-          )}
-        </form>
-      </div>
-    </aside>
+          {message}
+        </p>
+      )}
+    </div>
   );
+}
+
+declare global {
+  interface Window {
+    formIds?: string[];
+    formObject?: string;
+    leadForm?: ((config: LeadFormConfig) => void) | LeadFormConfig;
+  }
 }

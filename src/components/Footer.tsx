@@ -78,7 +78,7 @@ export default function Footer() {
           <div>
             <h4 className="text-xs uppercase tracking-widest font-semibold mb-6 text-gray-300">Quick Links</h4>
             <ul className="space-y-4 text-sm text-gray-400">
-              <li><a href="#services" className="hover:text-spa-blue-dark transition-colors">Spa Services</a></li>
+              <li><a href="#services" className="hover:text-spa-blue-dark transition-colors">Acne Services</a></li>
               <li><a href={LINKS.booking} target="_blank" rel="noopener noreferrer" className="hover:text-spa-blue-dark transition-colors">Book Online</a></li>
               <li><a href={LINKS.shopFaceReality} target="_blank" rel="noopener noreferrer" className="hover:text-spa-blue-dark transition-colors">Shop Face Reality</a></li>
               <li><a href={LINKS.shopGlymed} target="_blank" rel="noopener noreferrer" className="hover:text-spa-blue-dark transition-colors">Shop Glymed</a></li>
