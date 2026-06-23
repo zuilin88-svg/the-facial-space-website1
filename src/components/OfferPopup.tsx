@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+const OFFER_FORM_ID = '6874eeab-228b-416d-bb38-a327ca5ee0a2';
+
 type LeadFormConfig = {
   form_ids: string[];
   preview: number;
@@ -16,12 +18,24 @@ export default function OfferPopup() {
     setIsLoading(true);
 
     const formConfig: LeadFormConfig = {
-      form_ids: ['6874eeab-228b-416d-bb38-a327ca5ee0a2'],
+      form_ids: [OFFER_FORM_ID],
       preview: 0,
       asset_domain: 'cdn3.editmysite.com/app/marketing',
       data_domain: 'www.weebly.com/app/marketing',
     };
     const scriptSrc = 'https://cdn3.editmysite.com/app/marketing/js/dist/lead-form.js';
+
+    const handleNoShow = (event: MessageEvent) => {
+      if (event.data?.action !== 'noShow' || event.data?.id !== OFFER_FORM_ID) {
+        return;
+      }
+
+      setIsLoading(false);
+      setMessage('Offer form is not active yet. Please activate this form in Square/Weebly.');
+      window.removeEventListener('message', handleNoShow);
+    };
+
+    window.addEventListener('message', handleNoShow);
 
     window.formIds = window.formIds || [];
     if (window.leadForm && 'form_ids' in window.leadForm) {
@@ -41,14 +55,29 @@ export default function OfferPopup() {
 
     if (existingScript) {
       setIsLoading(false);
+      window.setTimeout(() => {
+        window.removeEventListener('message', handleNoShow);
+        const widget = window.leadFormWidget?.[OFFER_FORM_ID];
+        if (widget?.forms?.[OFFER_FORM_ID]?.formData) {
+          widget.open(OFFER_FORM_ID, widget.forms[OFFER_FORM_ID].formData);
+        } else {
+          setMessage('Offer form is not active yet. Please activate this form in Square/Weebly.');
+        }
+      }, 300);
       return;
     }
 
     const script = document.createElement('script');
     script.async = true;
     script.src = scriptSrc;
-    script.onload = () => setIsLoading(false);
+    script.onload = () => {
+      window.setTimeout(() => {
+        window.removeEventListener('message', handleNoShow);
+        setIsLoading(false);
+      }, 1200);
+    };
     script.onerror = () => {
+      window.removeEventListener('message', handleNoShow);
       setIsLoading(false);
       setMessage('Offer form could not load. Please refresh and try again.');
     };
@@ -82,5 +111,12 @@ declare global {
     formIds?: string[];
     formObject?: string;
     leadForm?: ((config: LeadFormConfig) => void) | LeadFormConfig;
+    leadFormWidget?: Record<
+      string,
+      {
+        forms?: Record<string, { formData: LeadFormConfig & Record<string, unknown> }>;
+        open: (formId: string, formData: LeadFormConfig & Record<string, unknown>) => void;
+      }
+    >;
   }
 }
