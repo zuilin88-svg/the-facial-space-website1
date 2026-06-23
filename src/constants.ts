@@ -1,7 +1,7 @@
 export const LINKS = {
   booking: "https://book.squareup.com/appointments/a33s1jx2przlil/location/LB2NHD6TZ4K6W/services?buttonTextColor=ffffff&color=000000&locale=en&referrer=so",
   instagram: "https://www.instagram.com/the.facialspace",
-  facebook: "https://www.facebook.com/p/The-Facial-Space-61561767781568",
+  facebook: "https://www.facebook.com/profile.php?id=61590185170411",
   maps: "https://www.google.com/maps/search/?api=1&query=The%20Facial%20Space%201959%20Front%20St%20Suite%20305%20East%20Meadow%20NY%2011554",
   shopFaceReality: "https://the-facial-space.square.site/s/shop",
   shopGlymed: "https://the-facial-space.square.site/glymed",
